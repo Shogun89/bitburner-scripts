@@ -1,13 +1,17 @@
-/** @param {NS} ns */
 export async function main(ns) {
 
-
-  var ram_upgrade = ns.args[0];
-  var servers = ns.getPurchasedServers();
+  var servers = ns.getPurchasedServers()
+  ns.disableLog("sleep");
   
   servers.forEach((server, index) => {
 
-    ns.upgradePurchasedServer(server, ram_upgrade)
+    let serverRam = ns.getServerMaxRam(server)
+    let ramUpgrade = serverRam * 2
+    let upgradeCost = ns.getPurchasedServerUpgradeCost(server, ramUpgrade)
+    let availableMoney = ns.getServerMoneyAvailable("home")
+    if (availableMoney > upgradeCost) {
+      ns.upgradePurchasedServer(server, ramUpgrade)
+    }
   })
 
 }

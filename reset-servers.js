@@ -1,14 +1,17 @@
 export async function main(ns) {
-
-  var num_threads = ns.args[0]
   var servers = ns.getPurchasedServers()
+  var hackScript = "early-hack-template.js"
 
   servers.forEach((server, index) => {
 
-    ns.scriptKill("early-hack-template.js", server)
-    //ns.rm("early-hack-template.js", servers[index])
-    //ns.scp("early-hack-template.js", servers[index])
-    ns.exec("early-hack-template.js", server, num_threads)
-  })
+    let maxServerRam = ns.getServerMaxRam(server);
+    let threadCost = ns.getScriptRam(hackScript);
+    let numThreads = Math.floor(maxServerRam/threadCost)
+    ns.scriptKill(hackScript, server)
+    ns.rm(hackScript , server)
+    ns.scp(hackScript , server)
+    ns.exec(hackScript, server, numThreads)
+    
+    })
 
 }
