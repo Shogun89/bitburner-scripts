@@ -1,11 +1,32 @@
 import { multiscan } from "utils.js";
 
+function count_cracks(ns){
+  var cracks = [
+    'BruteSSH.exe',
+    'FTPCrack.exe',
+    'relaySMTP.exe',
+    'HTTPWorm.exe',
+    'SQLInject.exe'
+
+  ]
+  var num_cracks = 0
+  for (let i=0; i < cracks.length; i++){
+    if (ns.fileExists(cracks[i], "home")){
+      num_cracks += 1
+    }
+  }
+
+  return num_cracks
+
+
+}
+
 export async function main(ns) {
 
   var targets = multiscan(ns, 'home');
 
   for (let i = 0; i < targets.length; i++) {
-    let server = targets[i]
+    var server = targets[i]
     if (ns.hasRootAccess(server) == false) {
       
       if (ns.fileExists('BruteSSH.exe', "home")) {
@@ -23,8 +44,11 @@ export async function main(ns) {
       if (ns.fileExists('SQLInject.exe', "home")) {
         ns.sqlinject(server);
       }
-      if (ns.getServerNumPortsRequired(server) == true){
+
+      let cracks = count_cracks(ns)
+      if (ns.getServerNumPortsRequired(server) <= cracks ){
         ns.nuke(server)
+        
       }
     }
   }
