@@ -1,17 +1,21 @@
 export async function main(ns) {
+
+  var num_minutes = ns.args[0]
   var servers = ns.getPurchasedServers()
-  var hackScript = "early-hack-template.js"
+  var sleep_time = 1000 * 60 * num_minutes
 
-  servers.forEach((server, index) => {
+  while (true) {
+    servers.forEach((server, index) => {
 
-    let maxServerRam = ns.getServerMaxRam(server);
-    let threadCost = ns.getScriptRam(hackScript);
-    let numThreads = Math.floor(maxServerRam/threadCost)
-    ns.scriptKill(hackScript, server)
-    ns.rm(hackScript , server)
-    ns.scp(hackScript , server)
-    ns.exec(hackScript, server, numThreads)
-    
-    })
+      // TODO : Make it take in list of scripts to copy, kill, execute
+      //ns.scriptKill(hackScript, server)
+      //ns.rm(hackScript , server)
+      ns.scp('daemon.js', server)
+      ns.scp('farm.js', server)
+      ns.exec('daemon.js', server)
+      
+      })
+      await ns.sleep(sleep_time)
+  }
 
 }
